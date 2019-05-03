@@ -82,6 +82,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #### Optional C++ restrictions
 set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Allow compiler C++ language extensions")
 
+IF (WIN32)
+	SET_PROPERTY(GLOBAL PROPERTY WIN32 "WIN32")
+ENDIF(WIN32)
+
 #### Define _WIN32_WINNT for some odd macros
 if(WIN32)
     # We have to set _WIN32_WINNT for ZeroMQ, ASIO
