@@ -79,17 +79,8 @@ Generating build files for OpenShot
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#### Optional C++ restirctions
-option(USE_CXX_GNU_EXTENSIONS "Allow GNU C++ extensions" OFF)
-if(USE_CXX_GNU_EXTENSIONS)
-	set(CMAKE_CXX_EXTENSIONS ON)
-else()
-	set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
-
-IF (WIN32)
-	SET_PROPERTY(GLOBAL PROPERTY WIN32 "WIN32")
-ENDIF(WIN32)
+#### Optional C++ restrictions
+set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Allow compiler C++ language extensions")
 
 #### Define _WIN32_WINNT for some odd macros
 if(WIN32)
