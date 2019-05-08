@@ -399,10 +399,14 @@ add_subdirectory(bindings)
 set(LIB_INSTALL_DIR lib${LIB_SUFFIX}) # determine correct lib folder
 
 # Install primary library
-INSTALL(  TARGETS openshot
+IF(WIN32)
+	INSTALL(TARGETS openshot DESTINATION ${LIB_INSTALL_DIR})
+ELSE(WIN32)
+	INSTALL(TARGETS openshot
 		ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
 		LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-		COMPONENT library )
+		COMPONENT library)
+ENDIF(WIN32)
 
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/include/libopenshot
