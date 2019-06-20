@@ -208,7 +208,7 @@ if (USE_SYSTEM_JSONCPP)
 	message(STATUS "Discovering system JsonCPP - done")
 else()
 	message(STATUS "Using embedded JsonCpp (USE_SYSTEM_JSONCPP not enabled)")
-	include_directories("../thirdparty/jsoncpp/include")
+	include_directories("../thirdparty/jsoncpp")
 endif(USE_SYSTEM_JSONCPP)
 
 ###############  PROFILING  #################
@@ -265,9 +265,7 @@ SET ( OPENSHOT_SOURCE_FILES
 IF (NOT USE_SYSTEM_JSONCPP)
 	# Third Party JSON Parser
 	SET ( OPENSHOT_SOURCE_FILES ${OPENSHOT_SOURCE_FILES}
-			../thirdparty/jsoncpp/src/lib_json/json_reader.cpp
-			../thirdparty/jsoncpp/src/lib_json/json_value.cpp
-			../thirdparty/jsoncpp/src/lib_json/json_writer.cpp)
+			../thirdparty/jsoncpp/jsoncpp.cpp )
 ENDIF (NOT USE_SYSTEM_JSONCPP)
 
 # ImageMagic related files
