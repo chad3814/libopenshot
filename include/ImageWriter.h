@@ -35,9 +35,10 @@
  * along with OpenShot Library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef OPENSHOT_IMAGE_WRITER_H
 #define OPENSHOT_IMAGE_WRITER_H
+
+#ifdef USE_IMAGEMAGICK
 
 #include "ReaderBase.h"
 #include "WriterBase.h"
@@ -47,11 +48,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
-#include "Magick++.h"
 #include "CacheMemory.h"
 #include "Exceptions.h"
 #include "OpenMPUtilities.h"
-
+#include "MagickUtilities.h"
 
 using namespace std;
 
@@ -148,4 +148,5 @@ namespace openshot
 
 }
 
-#endif
+#endif //USE_IMAGEMAGICK
+#endif //OPENSHOT_IMAGE_WRITER_H

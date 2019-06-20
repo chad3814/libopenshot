@@ -31,6 +31,9 @@
 #ifndef OPENSHOT_IMAGE_READER_H
 #define OPENSHOT_IMAGE_READER_H
 
+// Require ImageMagick support
+#ifdef USE_IMAGEMAGICK
+
 #include "ReaderBase.h"
 
 #include <cmath>
@@ -39,9 +42,9 @@
 #include <omp.h>
 #include <stdio.h>
 #include <memory>
-#include "Magick++.h"
 #include "CacheMemory.h"
 #include "Exceptions.h"
+#include "MagickUtilities.h"
 
 using namespace std;
 
@@ -116,4 +119,5 @@ namespace openshot
 
 }
 
-#endif
+#endif //USE_IMAGEMAGICK
+#endif //OPENSHOT_IMAGE_READER_H
