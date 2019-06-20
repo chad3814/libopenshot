@@ -80,6 +80,13 @@ list(APPEND OPENSHOT_INCLUDE_DIRS
     include/Qt
     ${CMAKE_CURRENT_BINARY_DIR}/include )
 
+#### Work around a GCC < 9 bug with handling of _Pragma() in macros
+#### See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
+if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+    (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "9.0.0"))
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-integrated-cpp")
+endif()
+
 #### Enable C++11 (for std::shared_ptr support)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
