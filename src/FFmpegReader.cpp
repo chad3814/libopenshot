@@ -96,9 +96,7 @@ FFmpegReader::FFmpegReader(std::string path)
 	AVCODEC_REGISTER_ALL
 
 	// Init cache
-	working_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * info.fps.ToDouble() * 2, info.width, info.height, info.sample_rate, info.channels);
-	missing_frames.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
-	final_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
+	UpdateCacheSizes();
 
 	// Open and Close the reader, to populate its attributes (such as height, width, etc...)
 	Open();
@@ -118,9 +116,7 @@ FFmpegReader::FFmpegReader(std::string path, bool inspect_reader)
 	AVCODEC_REGISTER_ALL
 
 	// Init cache
-	working_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * info.fps.ToDouble() * 2, info.width, info.height, info.sample_rate, info.channels);
-	missing_frames.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
-	final_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
+	UpdateCacheSizes();
 
 	// Open and Close the reader, to populate its attributes (such as height, width, etc...)
 	if (inspect_reader) {
@@ -565,9 +561,7 @@ void FFmpegReader::Open() {
 		previous_packet_location.sample_start = 0;
 
 		// Adjust cache size based on size of frame and audio
-		working_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * info.fps.ToDouble() * 2, info.width, info.height, info.sample_rate, info.channels);
-		missing_frames.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
-		final_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
+		UpdateCacheSizes();
 
 		// Mark as "open"
 		is_open = true;
@@ -804,8 +798,25 @@ void FFmpegReader::UpdateVideoInfo() {
 		QString str_value = tag->value;
 		info.metadata[str_key.toStdString()] = str_value.trimmed().toStdString();
 	}
+	UpdateCacheSizes();
 }
 
+void FFmpegReader::SetCacheSizes(int working_number_of_frames, int missing_number_of_frames, int final_number_of_frames) {
+	working_cache_frames = working_number_of_frames;
+	missing_cache_frames = missing_number_of_frames;
+	final_cache_frames = final_number_of_frames;
+	UpdateCacheSizes();
+}
+
+void FFmpegReader::UpdateCacheSizes() {
+	working_cache.SetMaxBytesFromInfo(working_cache_frames, info.width, info.height, info.sample_rate, info.channels);
+	missing_frames.SetMaxBytesFromInfo(missing_cache_frames, info.width, info.height, info.sample_rate, info.channels);
+	if (final_cache_frames == -1) {
+		final_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * info.fps.ToDouble() * 2, info.width, info.height, info.sample_rate, info.channels);
+	} else {
+		final_cache.SetMaxBytesFromInfo(final_cache_frames, info.width, info.height, info.sample_rate, info.channels);
+	}
+}
 
 std::shared_ptr<Frame> FFmpegReader::GetFrame(int64_t requested_frame) {
 	// Check for open reader (or throw exception)
