@@ -111,11 +111,11 @@ namespace openshot {
 		bool has_missing_frames;
 
 		// -1 will be 2 seconds of frames times OPEN_MP_NUM_PROCESSORS
-		int final_cache_frames = -1;
+		int final_cache_megabytes = -1;
 		CacheMemory working_cache;
-		int working_cache_frames = OPEN_MP_NUM_PROCESSORS * 2;
+		int working_cache_megabytes = -1;
 		CacheMemory missing_frames;
-		int missing_cache_frames = OPEN_MP_NUM_PROCESSORS * 2;
+		int missing_cache_megabytes = -1;
 		std::map<int64_t, int64_t> processing_video_frames;
 		std::multimap<int64_t, int64_t> processing_audio_frames;
 		std::map<int64_t, int64_t> processed_video_frames;
@@ -256,7 +256,9 @@ namespace openshot {
 
 		/// Get the cache object used by this reader
 		CacheMemory *GetCache() { return &final_cache; };
-		void SetCacheSizes(int working_number_of_frames, int missing_number_of_frames, int final_number_of_frames);
+
+		/// Set the sizes of the working_cache, missing_frames and final_cache, in megabytes
+		void SetCacheSizes(int working_megabytes, int missing_megabytes, int final_megabytes);
 
 		/// Get a shared pointer to a openshot::Frame object for a specific frame number of this reader.
 		///

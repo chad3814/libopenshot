@@ -801,20 +801,29 @@ void FFmpegReader::UpdateVideoInfo() {
 	UpdateCacheSizes();
 }
 
-void FFmpegReader::SetCacheSizes(int working_number_of_frames, int missing_number_of_frames, int final_number_of_frames) {
-	working_cache_frames = working_number_of_frames;
-	missing_cache_frames = missing_number_of_frames;
-	final_cache_frames = final_number_of_frames;
+void FFmpegReader::SetCacheSizes(int working_megabytes, int missing_megabytes, int final_megabytes) {
+	working_cache_megabytes = working_megabytes;
+	missing_cache_megabytes = missing_megabytes;
+	final_cache_megabytes = final_megabytes;
 	UpdateCacheSizes();
 }
 
 void FFmpegReader::UpdateCacheSizes() {
-	working_cache.SetMaxBytesFromInfo(working_cache_frames, info.width, info.height, info.sample_rate, info.channels);
-	missing_frames.SetMaxBytesFromInfo(missing_cache_frames, info.width, info.height, info.sample_rate, info.channels);
-	if (final_cache_frames == -1) {
+
+	if (working_cache_megabytes == -1) {
+		working_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
+	} else {
+		working_cache.SetMaxBytes(working_cache_megabytes * 1048576);
+    }
+	if (missing_cache_megabytes == -1) {
+		missing_frames.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
+	} else {
+		missing_frames.SetMaxBytes(missing_cache_megabytes * 1048576);
+    }
+	if (final_cache_megabytes == -1) {
 		final_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * info.fps.ToDouble() * 2, info.width, info.height, info.sample_rate, info.channels);
 	} else {
-		final_cache.SetMaxBytesFromInfo(final_cache_frames, info.width, info.height, info.sample_rate, info.channels);
+		final_cache.SetMaxBytes(final_cache_megabytes * 1048576);
 	}
 }
 
