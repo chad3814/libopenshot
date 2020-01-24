@@ -601,6 +601,10 @@ void FFmpegReader::Close() {
 		}
 
 		// Clear final cache
+        // std::cout << "clearing final, working and missing caches for " << path << "\n";
+        // std::cout << "final: " << final_cache.GetBytes() << "/" << final_cache.GetMaxBytes() << "\n";
+        // std::cout << "working: " << working_cache.GetBytes() << "/" << working_cache.GetMaxBytes() << "\n";
+        // std::cout << "missing: " << missing_frames.GetBytes() << "/" << missing_frames.GetMaxBytes() << "\n";
 		final_cache.Clear();
 		working_cache.Clear();
 		missing_frames.Clear();
@@ -801,20 +805,28 @@ void FFmpegReader::UpdateVideoInfo() {
 	UpdateCacheSizes();
 }
 
-void FFmpegReader::SetCacheSizes(int working_number_of_frames, int missing_number_of_frames, int final_number_of_frames) {
-	working_cache_frames = working_number_of_frames;
-	missing_cache_frames = missing_number_of_frames;
-	final_cache_frames = final_number_of_frames;
+void FFmpegReader::SetCacheSizes(int64_t working_cache_bytes, int64_t missing_cache_bytes, int64_t final_cache_bytes) {
+	this->working_cache_bytes = working_cache_bytes;
+	this->missing_cache_bytes = missing_cache_bytes;
+	this->final_cache_bytes = final_cache_bytes;
 	UpdateCacheSizes();
 }
 
 void FFmpegReader::UpdateCacheSizes() {
-	working_cache.SetMaxBytesFromInfo(working_cache_frames, info.width, info.height, info.sample_rate, info.channels);
-	missing_frames.SetMaxBytesFromInfo(missing_cache_frames, info.width, info.height, info.sample_rate, info.channels);
-	if (final_cache_frames == -1) {
+	if (working_cache_bytes == -1) {
+		working_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
+	} else {
+		working_cache.SetMaxBytes(working_cache_bytes);
+	}
+	if (missing_cache_bytes == -1) {
+		missing_frames.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * 2, info.width, info.height, info.sample_rate, info.channels);
+	} else {
+		missing_frames.SetMaxBytes(missing_cache_bytes);
+	}
+	if (final_cache_bytes == -1) {
 		final_cache.SetMaxBytesFromInfo(OPEN_MP_NUM_PROCESSORS * info.fps.ToDouble() * 2, info.width, info.height, info.sample_rate, info.channels);
 	} else {
-		final_cache.SetMaxBytesFromInfo(final_cache_frames, info.width, info.height, info.sample_rate, info.channels);
+		final_cache.SetMaxBytes(final_cache_bytes);
 	}
 }
 
@@ -1728,6 +1740,9 @@ void FFmpegReader::Seek(int64_t requested_frame) {
 	}
 
 	// Clear working cache (since we are seeking to another location in the file)
+    // std::cout << "clearing working and missing caches for " << path << "\n";
+    // std::cout << "working: " << working_cache.GetBytes() << "/" << working_cache.GetMaxBytes() << "\n";
+    // std::cout << "missing: " << missing_frames.GetBytes() << "/" << missing_frames.GetMaxBytes() << "\n";
 	working_cache.Clear();
 	missing_frames.Clear();
 
