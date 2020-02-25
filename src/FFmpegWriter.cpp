@@ -1031,7 +1031,6 @@ void FFmpegWriter::free_resources() {
 	deallocate_frames.clear();
 	av_frames.clear();
 
-#if (LIBAVFORMAT_VERSION_MAJOR >= 58)
 	if (video_codec) {
 		AV_FREE_CONTEXT(video_codec);
 		video_codec = NULL;
@@ -1040,17 +1039,6 @@ void FFmpegWriter::free_resources() {
 		AV_FREE_CONTEXT(audio_codec);
 		audio_codec = NULL;
 	}
-
-#elif (LIBAVFORMAT_VERSION_MAJOR <= 55)
-	if (video_codec) {
-		AV_FREE_CONTEXT(video_codec);
-		video_codec = NULL;
-	}
-	if (audio_codec) {
-		AV_FREE_CONTEXT(audio_codec);
-		audio_codec = NULL;
-	}
-#endif
 
 	if (oc) {
 		avformat_free_context(oc);
