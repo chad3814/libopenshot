@@ -998,27 +998,34 @@ void FFmpegWriter::close_audio(AVFormatContext *oc, AVStream *st)
 }
 
 void FFmpegWriter::free_resources() {
+    std::cout << "free_resources\n";
 	// Close each codec
 	if (video_st) {
+        std::cout << "close_video\n";
 		close_video(oc, video_st);
 		video_st = NULL;
 	}
 	if (audio_st) {
+        std::cout << "close_video\n";
 		close_audio(oc, audio_st);
 		audio_st = NULL;
 	}
 
 	// Deallocate image scalers
-	if (image_rescalers.size() > 0)
+	if (image_rescalers.size() > 0) {
+        std::cout << "remove scalers\n";
 		RemoveScalers();
+    }
 
 	if (!(fmt->flags & AVFMT_NOFILE)) {
+        std::cout << "close file\n";
 		/* close the output file */
 		avio_close(oc->pb);
 	}
 
     // be sure to free any allocated AVFrames
 	for (auto pair : av_frames) {
+        std::cout << "free frame\n";
 		AVFrame *frame = pair.second;
 		AV_FREE_FRAME(&frame);
 	}
@@ -1032,15 +1039,18 @@ void FFmpegWriter::free_resources() {
 	av_frames.clear();
 
 	if (video_codec) {
+        std::cout << "free video context\n";
 		AV_FREE_CONTEXT(video_codec);
 		video_codec = NULL;
 	}
 	if (audio_codec) {
+        std::cout << "free audio context\n";
 		AV_FREE_CONTEXT(audio_codec);
 		audio_codec = NULL;
 	}
 
 	if (oc) {
+        std::cout << "free format context\n";
 		avformat_free_context(oc);
 		oc = NULL;
 	}
