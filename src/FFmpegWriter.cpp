@@ -1062,6 +1062,8 @@ void FFmpegWriter::Close() {
 	if (!write_trailer)
 		WriteTrailer();
 
+	free_resources();
+
 	// Reset frame counters
 	write_video_count = 0;
 	write_audio_count = 0;
