@@ -1017,7 +1017,7 @@ void FFmpegWriter::free_resources() {
 		RemoveScalers();
     }
 
-	if (!(fmt->flags & AVFMT_NOFILE)) {
+	if (oc && !(fmt->flags & AVFMT_NOFILE)) {
         std::cout << "close file\n";
 		/* close the output file */
 		avio_close(oc->pb);
